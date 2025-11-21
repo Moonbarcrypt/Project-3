@@ -1,0 +1,45 @@
+"""
+Program to check if a string containing braces, parentheses, and brackets is
+properly delimited using a single stack.
+"""
+
+def is_properly_delimited(s):
+    """Checks if a string 's' containing delimiters is properly balanced."""
+    st = []
+    # Map closing delimiters to their required openers
+    d_map = {")": "(", "}": "{", "]": "["}
+    
+    for char in s:
+        if char in d_map.values():
+            # Found an opening delimiter, push it
+            st.append(char)
+        elif char in d_map:
+            # Found a closing delimiter
+            if not st or st.pop() != d_map[char]:
+                # Error: Stack is empty (unmatched closing) or mismatch found
+                return False
+            
+    # Result is valid if and only if the stack is empty at the end
+    return not st
+
+# --- Test Cases ---
+if __name__ == "__main__":
+    test_cases = [
+        # Valid Cases
+        "{[()]()}",                   # Nested and disjoint
+        "()[]{}{}",                   # Disjoint
+        "([{}])",                     # Nested
+
+        # Invalid Cases
+        "([)]",                       # Crossing brackets
+        "((",                         # Unmatched opening
+        "}",                          # Unmatched closing
+        "{[",                         # Unmatched opening
+        "[{(})]",                     # Mismatch/Crossing
+    ]
+
+    print("--- Delimiter Checker Program Start (Simple Version) ---")
+    for case in test_cases:
+        result = is_properly_delimited(case)
+        # Using a simple output format
+        print(f"'{case}': {'VALID' if result else 'INVALID'}")

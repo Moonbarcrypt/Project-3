@@ -1,45 +1,72 @@
-"""
-Program to check if a string containing braces, parentheses, and brackets is
-properly delimited using a single stack.
-"""
+#include <iostream>
+#include <string>
+#include <stack>
+#include <map>
 
-def is_properly_delimited(s):
-    """Checks if a string 's' containing delimiters is properly balanced."""
-    st = []
-    # Map closing delimiters to their required openers
-    d_map = {")": "(", "}": "{", "]": "["}
+/**
+ * Checks if a string containing braces, parentheses, and brackets is
+ * properly delimited using a single stack.
+ *
+ * @param s The string to check, potentially containing '()', '{}', and '[]'.
+ * @return True if the string is properly delimited, False otherwise.
+ */
+bool isProperlyDelimited(const std::string& s) {
+    std::stack<char> st;
+    // Map closing delimiters to their required openers
+    std::map<char, char> d_map = {
+        {')', '('}, 
+        {'}', '{'}, 
+        {']', '['}
+    };
     
-    for char in s:
-        if char in d_map.values():
-            # Found an opening delimiter, push it
-            st.append(char)
-        elif char in d_map:
-            # Found a closing delimiter
-            if not st or st.pop() != d_map[char]:
-                # Error: Stack is empty (unmatched closing) or mismatch found
-                return False
+    // Define the set of opening delimiters for efficiency
+    std::string open_delimiters = "([{"; 
+
+    for (char const& c : s) {
+        if (open_delimiters.find(c) != std::string::npos) {
+            // Found an opening delimiter, push it
+            st.push(c);
+        } else if (d_map.count(c)) {
+            // Found a closing delimiter
+            if (st.empty() || st.top() != d_map[c]) {
+                // Error: Stack is empty (unmatched closing) or mismatch found
+                return false;
+            }
+            // Match found, pop the opener
+            st.pop();
+        }
+        // Ignore all other characters
+    }
             
-    # Result is valid if and only if the stack is empty at the end
-    return not st
+    // Result is valid if and only if the stack is empty at the end
+    return st.empty();
+}
 
-# --- Test Cases ---
-if __name__ == "__main__":
-    test_cases = [
-        # Valid Cases
-        "{[()]()}",                   # Nested and disjoint
-        "()[]{}{}",                   # Disjoint
-        "([{}])",                     # Nested
+int main() {
+    // --- Test Cases ---
+    std::string test_cases[] = {
+        // Valid Cases
+        "{[()]()}",                   
+        "()[]{}{}",                   
+        "([{}])",                     
 
-        # Invalid Cases
-        "([)]",                       # Crossing brackets
-        "((",                         # Unmatched opening
-        "}",                          # Unmatched closing
-        "{[",                         # Unmatched opening
-        "[{(})]",                     # Mismatch/Crossing
-    ]
+        // Invalid Cases
+        "([)]",                       
+        "((",                         
+        "}",                          
+        "{[",                         
+        "[{(})]",                     
+    };
 
-    print("--- Delimiter Checker Program Start (Simple Version) ---")
-    for case in test_cases:
-        result = is_properly_delimited(case)
-        # Using a simple output format
-        print(f"'{case}': {'VALID' if result else 'INVALID'}")
+    std::cout << "--- Delimiter Checker Program Start (C++ Version) ---\n";
+    
+    for (const std::string& case_str : test_cases) {
+        bool result = isProperlyDelimited(case_str);
+        // Using a simple output format
+        std::cout << "'" << case_str << "': " 
+                  << (result ? "VALID" : "INVALID") 
+                  << "\n";
+    }
+
+    return 0;
+}
